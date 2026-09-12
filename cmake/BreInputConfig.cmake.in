@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+include(CMakeFindDependencyMacro)
+find_dependency(Threads)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    find_dependency(PkgConfig)
+    pkg_check_modules(BREINPUT_X11 REQUIRED IMPORTED_TARGET x11 xtst)
+    pkg_check_modules(BREINPUT_GIO REQUIRED IMPORTED_TARGET gio-2.0 gio-unix-2.0)
+endif()
+include("${CMAKE_CURRENT_LIST_DIR}/BreInputTargets.cmake")
+
+check_required_components(BreInput)

@@ -1,0 +1,27 @@
+---
+BasedOnStyle: google
+IndentWidth: 4
+ColumnLimit: 100
+AlignAfterOpenBracket: Align
+BraceWrapping:
+  AfterFunction: false
+  SplitEmptyFunction: true
+SortIncludes: CaseSensitive
+SpacesInAngles: Never
+AllowShortFunctionsOnASingleLine: All
+AllowShortLambdasOnASingleLine: false
+AccessModifierOffset: -4
+BreakTemplateDeclarations: Leave
+BreakBeforeConceptDeclarations: true
+AllowShortCompoundRequirementOnASingleLine: false
+
+
+# 注释对齐
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 2
+
+MaxEmptyLinesToKeep: 2
+
+BreakConstructorInitializers: BeforeComma
+PackConstructorInitializers: CurrentLine

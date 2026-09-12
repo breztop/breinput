@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.16)
+project(BreInputConsumer LANGUAGES CXX)
+find_package(BreInput CONFIG REQUIRED)
+get_target_property(breinput_type BreInput::BreInput TYPE)
+if(NOT breinput_type STREQUAL "STATIC_LIBRARY")
+    message(FATAL_ERROR "BreInput must be a static library")
+endif()
+add_executable(consumer main.cpp)
+target_link_libraries(consumer PRIVATE BreInput::BreInput)
+
+enable_testing()
+add_test(NAME consumer_runs COMMAND consumer)
