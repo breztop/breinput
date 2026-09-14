@@ -7,8 +7,8 @@
 #include <map>
 #include <type_traits>
 
-#include "device.hpp"
-#include "key_mapping.hpp"
+#include <breinput/device.hpp>
+#include <breinput/key_mapping.hpp>
 namespace breinput {
 namespace {
 class WindowsBackend final : public InjectionBackend {

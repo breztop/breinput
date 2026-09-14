@@ -6,8 +6,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "key_map.hpp"
-#include "monitor.hpp"
+#include "breinput/key_map.hpp"
+#include <breinput/monitor.hpp>
 namespace breinput {
 std::unique_ptr<CaptureBackend> CreatePortalCaptureBackend();
 namespace {

@@ -6,8 +6,8 @@
 #include <set>
 
 #include "ei_library.hpp"
-#include "key_map.hpp"
-#include "monitor.hpp"
+#include "breinput/key_map.hpp"
+#include <breinput/monitor.hpp>
 #include "portal_connection.hpp"
 namespace breinput {
 namespace {

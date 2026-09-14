@@ -1,6 +1,9 @@
 #pragma once
+
 #include <array>
 #include <cstdint>
+
+
 namespace breinput::detail {
 // HID page 0x07 -> Linux evdev code (also used by the portal keyboard API).
 inline constexpr auto kEvdev = [] {

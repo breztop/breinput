@@ -5,8 +5,8 @@
 #include <mutex>
 #include <type_traits>
 
-#include "device.hpp"
-#include "key_map.hpp"
+#include <breinput/device.hpp>
+#include "breinput/key_map.hpp"
 
 namespace breinput {
 std::unique_ptr<InjectionBackend> CreatePortalBackend();

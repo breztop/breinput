@@ -4,7 +4,7 @@
 #include <chrono>
 #include <thread>
 
-#include "device.hpp"
+#include <breinput/device.hpp>
 namespace breinput::detail {
 inline constexpr auto kBus = "org.freedesktop.portal.Desktop";
 inline constexpr auto kPath = "/org/freedesktop/portal/desktop";

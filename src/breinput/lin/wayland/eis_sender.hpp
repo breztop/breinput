@@ -2,7 +2,7 @@
 #include <map>
 #include <string>
 
-#include "device.hpp"
+#include <breinput/device.hpp>
 #include "ei_library.hpp"
 namespace breinput::detail {
 // 所有调用在输入工作线程，EIS 所有权和 Portal 会话所有权分开。

@@ -24,6 +24,33 @@ struct Fake final : InjectionBackend {
     }
     void Stop() noexcept override { closed = true; }
 };
+BOOST_AUTO_TEST_CASE(named_chord_recording_playback_and_release) {
+    auto fake = std::make_unique<Fake>();
+    auto* backend = fake.get();
+    Injector input({}, {}, std::move(fake));
+    Recorder recorder;
+    recorder.Record(Key{KeyCode::LeftWin, true});
+    recorder.Record(Key{KeyCode::A, true});
+    recorder.Record(Key{KeyCode::A, false});
+    recorder.Record(Button{MouseButton::Left, true});
+    BOOST_REQUIRE(!input.Start());
+    BOOST_REQUIRE(!Playback(input, recorder.Snapshot()));
+    input.WaitForIdle();
+    input.Stop();
+    BOOST_REQUIRE_EQUAL(backend->events.size(), 6);
+    const Key meta_down{KeyCode::LeftCommand, true};
+    const Key a_down{KeyCode::A, true};
+    const Key a_up{KeyCode::A, false};
+    const Button left_down{MouseButton::Left, true};
+    const Key meta_up{KeyCode::LeftMeta, false};
+    const Button left_up{MouseButton::Left, false};
+    BOOST_CHECK(std::get<Key>(backend->events[0]) == meta_down);
+    BOOST_CHECK(std::get<Key>(backend->events[1]) == a_down);
+    BOOST_CHECK(std::get<Key>(backend->events[2]) == a_up);
+    BOOST_CHECK(std::get<Button>(backend->events[3]) == left_down);
+    BOOST_CHECK(std::get<Key>(backend->events[4]) == meta_up);
+    BOOST_CHECK(std::get<Button>(backend->events[5]) == left_up);
+}
 BOOST_AUTO_TEST_CASE(release_and_restart) {
     auto fake = std::make_unique<Fake>();
     auto* backend = fake.get();
@@ -154,7 +181,7 @@ BOOST_AUTO_TEST_CASE(monitor_callback_can_stop_and_throw) {
         Error Poll(const EventCallback& enqueue) override {
             if (!delivered) {
                 delivered = true;
-                enqueue(Key{4, true});
+                enqueue(Key{KeyCode::LeftCommand, true});
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
             return {};
@@ -164,9 +191,12 @@ BOOST_AUTO_TEST_CASE(monitor_callback_can_stop_and_throw) {
     Monitor* owner = nullptr;
     std::atomic<bool> called = false;
     Monitor monitor(
-        [&](const Event&) {
+        [&](const Event& event) {
             owner->Stop();
-            called = true;
+            const auto* key = std::get_if<Key>(&event);
+            if (key && key->GetCode() == KeyCode::LeftWin && key->down) {
+                called = true;
+            }
             throw 1;
         },
         {}, {}, std::make_unique<Capture>());

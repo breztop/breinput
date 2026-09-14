@@ -3,7 +3,7 @@
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>
 
-#include "breinput/ei_library.hpp"
+#include "breinput/lin/wayland/ei_library.hpp"
 #include "breinput/monitor.hpp"
 using namespace breinput;
 namespace {

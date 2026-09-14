@@ -3,11 +3,17 @@
 #include <cstdint>
 #include <variant>
 
+#include "key_code.hpp"
+
 namespace breinput {
 // 键盘标识使用 USB HID Keyboard/Keypad Usage Page (0x07)，与当前键盘布局无关。
 struct Key {
     std::uint16_t usage = 0;
     bool down = false;
+    constexpr Key() noexcept = default;
+    constexpr Key(KeyCode code, bool down = false) noexcept : usage(ToHidUsage(code)), down(down) {}
+    constexpr Key(std::uint16_t usage, bool down = false) noexcept : usage(usage), down(down) {}
+    constexpr KeyCode GetCode() const noexcept { return static_cast<KeyCode>(usage); }
     bool operator==(const Key&) const = default;
 };
 enum class CoordinateSpace : std::uint8_t { Desktop, RelativeMotion, Normalized };
@@ -18,9 +24,24 @@ struct Pointer {
     bool operator==(const Pointer&) const = default;
 };
 // USB HID 按钮编号：1 左、2 右、3 中、4/5 侧键。
+enum class MouseButton : std::uint8_t {
+    Left = 1,
+    Right = 2,
+    Middle = 3,
+    Back = 4,
+    Forward = 5,
+};
 struct Button {
     std::uint8_t button = 1;
     bool down = false;
+    constexpr Button() noexcept = default;
+    constexpr Button(MouseButton button, bool down = false) noexcept
+        : button(static_cast<std::uint8_t>(button))
+        , down(down) {}
+    constexpr Button(std::uint8_t button, bool down = false) noexcept
+        : button(button)
+        , down(down) {}
+    constexpr MouseButton GetButton() const noexcept { return static_cast<MouseButton>(button); }
     bool operator==(const Button&) const = default;
 };
 // 单位为一个滚轮刻度；x 正向右，y 正向上。

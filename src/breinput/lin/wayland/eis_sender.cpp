@@ -5,7 +5,7 @@
 #include <chrono>
 #include <type_traits>
 
-#include "key_map.hpp"
+#include "breinput/key_map.hpp"
 namespace breinput::detail {
 EisSender::~EisSender() {
     for (auto& [id, touch] : touches_) {

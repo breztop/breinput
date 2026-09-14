@@ -27,17 +27,24 @@ if(APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(breinput PUBLIC -fexperimental-library)
     target_link_options(breinput PUBLIC -fexperimental-library)
 endif()
-target_include_directories(breinput PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+target_include_directories(breinput
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_link_libraries(breinput PRIVATE Threads::Threads)
 if(WIN32)
-    target_sources(breinput PRIVATE src/breinput/backend_win.cpp src/breinput/monitor_win.cpp)
+    target_sources(breinput PRIVATE
+        src/breinput/win/backend_win.cpp
+        src/breinput/win/monitor_win.cpp
+    )
     target_compile_definitions(breinput PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
     target_link_libraries(breinput PRIVATE user32)
 elseif(APPLE)
-    target_sources(breinput PRIVATE src/breinput/backend_mac.cpp src/breinput/monitor_mac.cpp)
+    target_sources(breinput PRIVATE
+        src/breinput/mac/backend_mac.cpp
+        src/breinput/mac/monitor_mac.cpp
+    )
     target_link_libraries(breinput PRIVATE "-framework ApplicationServices")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     find_package(PkgConfig REQUIRED)
@@ -50,12 +57,12 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_include_directories(breinput PRIVATE ${BREINPUT_LIBEI_INCLUDE_DIR})
     target_link_libraries(breinput PRIVATE ${CMAKE_DL_LIBS})
     target_sources(breinput PRIVATE
-        src/breinput/ei_library.cpp
-        src/breinput/eis_sender.cpp
-        src/breinput/monitor_portal.cpp
-        src/breinput/backend_x11.cpp
-        src/breinput/backend_portal.cpp
-        src/breinput/monitor_x11.cpp
+        src/breinput/lin/x11/backend_x11.cpp
+        src/breinput/lin/x11/monitor_x11.cpp
+        src/breinput/lin/wayland/backend_portal.cpp
+        src/breinput/lin/wayland/monitor_portal.cpp
+        src/breinput/lin/wayland/ei_library.cpp
+        src/breinput/lin/wayland/eis_sender.cpp
     )
     target_link_libraries(breinput PRIVATE PkgConfig::BREINPUT_X11 PkgConfig::BREINPUT_GIO)
 else()
@@ -68,6 +75,7 @@ install(TARGETS breinput
 install(FILES
     src/breinput/monitor.hpp
     src/breinput/key_mapping.hpp
+    src/breinput/key_code.hpp
     src/breinput/event.hpp
     src/breinput/device.hpp
     src/breinput/recording.hpp
@@ -94,42 +102,9 @@ install(FILES
 )
 if(BREINPUT_BUILD_TESTS)
     enable_testing()
-    find_package(Boost REQUIRED)
-
-    add_executable(breinput_test test/test_input.cpp)
-    target_link_libraries(breinput_test PRIVATE BreInput::BreInput)
-    target_include_directories(breinput_test PRIVATE ${Boost_INCLUDE_DIRS})
-    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-        add_library(breinput_incomplete_ei SHARED test/incomplete_ei.cpp)
-        add_library(breinput_without_ei SHARED test/without_libei.cpp)
-        target_link_libraries(breinput_without_ei PRIVATE ${CMAKE_DL_LIBS})
-        add_test(NAME breinput_without_libei COMMAND ${CMAKE_COMMAND} -E env
-            LD_PRELOAD=$<TARGET_FILE:breinput_without_ei>
-            BREINPUT_TEST_EXPECT_NO_LIBEI=1
-            $<TARGET_FILE:breinput_test>
-            --run_test=libei_is_lazy_and_missing_capture_fails_before_portal
-        )
-        set_tests_properties(breinput_without_libei PROPERTIES TIMEOUT 30)
-        target_sources(breinput_test PRIVATE test/test_ei_library.cpp)
-        target_include_directories(breinput_test PRIVATE ${BREINPUT_LIBEI_INCLUDE_DIR})
-        target_compile_definitions(breinput_test PRIVATE
-            BREINPUT_BAD_EI="$<TARGET_FILE:breinput_incomplete_ei>"
-        )
-        add_dependencies(breinput_test breinput_incomplete_ei)
-    endif()
-    add_test(NAME breinput_test COMMAND breinput_test)
-    set_tests_properties(breinput_test PROPERTIES TIMEOUT 30)
-    add_test(NAME breinput_package_consumer COMMAND ${CMAKE_COMMAND}
-        -DBREINPUT_BINARY=${CMAKE_CURRENT_BINARY_DIR}
-        -DBREINPUT_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}
-        -DBREINPUT_COMPILER=${CMAKE_CXX_COMPILER}
-        -DBREINPUT_CONFIG=$<CONFIG>
-        -P ${CMAKE_CURRENT_SOURCE_DIR}/test/package/verify.cmake
-    )
-    set_tests_properties(breinput_package_consumer PROPERTIES TIMEOUT 90)
+    add_subdirectory(test)
 endif()
 
 if(BREINPUT_BUILD_EXAMPLES)
-    add_executable(breinput_demo examples/input_demo.cpp)
-    target_link_libraries(breinput_demo PRIVATE BreInput::BreInput)
+    add_subdirectory(examples)
 endif()

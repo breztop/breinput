@@ -1,7 +1,7 @@
 #pragma once
 #include <libei.h>
 
-#include "device.hpp"
+#include <breinput/device.hpp>
 namespace breinput::detail {
 // 后端持有共享所有权，最后一个 EIS 对象释放后才卸载动态库。
 class EiLibrary final {

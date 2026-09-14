@@ -3,8 +3,8 @@
 #include <set>
 #include <vector>
 
-#include "key_mapping.hpp"
-#include "monitor.hpp"
+#include <breinput/key_mapping.hpp>
+#include <breinput/monitor.hpp>
 namespace breinput {
 namespace {
 class MacCapture final : public CaptureBackend {

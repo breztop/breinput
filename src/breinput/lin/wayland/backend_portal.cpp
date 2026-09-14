@@ -5,9 +5,9 @@
 #include <thread>
 #include <type_traits>
 
-#include "device.hpp"
+#include <breinput/device.hpp>
 #include "eis_sender.hpp"
-#include "key_map.hpp"
+#include "breinput/key_map.hpp"
 #include "portal_connection.hpp"
 
 namespace breinput {

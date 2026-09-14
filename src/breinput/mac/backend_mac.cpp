@@ -3,8 +3,8 @@
 #include <array>
 #include <type_traits>
 
-#include "device.hpp"
-#include "key_mapping.hpp"
+#include <breinput/device.hpp>
+#include <breinput/key_mapping.hpp>
 namespace breinput {
 namespace {
 class MacBackend final : public InjectionBackend {

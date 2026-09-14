@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
         breinput::Monitor monitor(
             [&](const breinput::Event& event) {
                 if (auto* key = std::get_if<breinput::Key>(&event);
-                    key && key->usage == 41 && key->down) {
+                    key && key->GetCode() == breinput::KeyCode::Escape && key->down) {
                     stop = true;
                 }
                 std::osyncstream(std::cout) << "event kind=" << event.index() << '\n';
